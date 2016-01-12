@@ -1,0 +1,14 @@
+security config
+<http auto-config="true">
+	<intercept-url  pattern="/**" access="ROLE" />
+</http>
+access=goup user policy/ restriction!!
+
+setup user:
+<authentication-manager>
+	<authentication-provider>
+		<user-service>
+			<user name="user" password="user" authorities="ROLE"/>!!!
+		</user-service>
+	</authentication-provicer>
+</authentication-manager>
