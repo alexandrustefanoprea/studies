@@ -1,0 +1,120 @@
+Umbrella specification = contains specifications
+Stateless = request scope
+Stateful = app, session, conversation scope
+
+Spring MVC
+-DispatcherServlet -entry/config point for app
+Controller - command pattern handles teh request and determines the view
+RequestMapping - url and request type that a method is tied to
+ViewResolver - used for JSP location or whatever view is used
+Servlet config - config file per DispatcherServlet
+Bean - a spring configured POJO
+
+Dependencies: spring webmvc, servlet-api, jstl
+@Service->describes actions of a system
+@Repository
+Spring tag libraries: spring tld ->error handling, binding     spring-form.tld->processing form data
+
+in taglib, prefix doesn't matter
+
+
+SpringMVC 4
+nu mai exista web.xml si spring-config.xml (totul se face prin adnotari)
+package com.pluralsight;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+
+import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
+
+public class WebAppInitializer implements WebApplicationInitializer {
+
+	@Override
+	public void onStartup(ServletContext arg0) throws ServletException {
+		WebApplicationContext context = getContext();
+		arg0.addListener(new ContextLoaderListener(context));
+		ServletRegistration.Dynamic dispatcher = arg0.addServlet("DispatcherServlet", new DispatcherServlet(context));
+		dispatcher.setLoadOnStartup(1);
+		dispatcher.addMapping("*.html");
+		dispatcher.addMapping("*.pdf");
+		dispatcher.addMapping("*.json");
+		dispatcher.addMapping("*.xml");
+	}
+
+	private AnnotationConfigWebApplicationContext getContext() {
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		context.register(WebConfig.class);
+		return context;
+	}
+	
+}
+
+package com.pluralsight;
+
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+@Configuration
+@EnableWebMvc
+@ComponentScan(basePackages="com.pluralsight")
+public class WebConfig extends WebMvcConfigurerAdapter{
+	
+	
+	@Bean
+	public MessageSource messageSource(){
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+		messageSource.setBasename("messages");
+		return messageSource;
+	}
+	
+	@Bean
+	public LocaleResolver localeResolver(){
+		SessionLocaleResolver resolver = new SessionLocaleResolver();
+		resolver.setDefaultLocale(Locale.ENGLISH);
+		
+		return resolver;
+	}
+	
+	@Override
+	public void addInterceptors(InterceptorRegistry registry){
+		LocaleChangeInterceptor changeInterceptor = new LocaleChangeInterceptor();
+		changeInterceptor.setParamName("language");
+		registry.addInterceptor(changeInterceptor);
+	}
+	
+	@Bean
+	public InternalResourceViewResolver getInternalResourceViewResolver(){
+		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+		resolver.setPrefix("/WEB-INF/jsp/");
+		resolver.setSuffix(".jsp");
+		return resolver;
+	}
+	
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/pdfs/**").addResourceLocations("/WEB-INF/pdf/");
+		registry.addResourceHandler("/documents/**").addResourceLocations("/WEB-INF/docs/");
+		super.addResourceHandlers(registry);
+	}
+	
+}
+Result ca la celelalte versiuni de spring :)
