@@ -25,3 +25,10 @@ Jars required for JPA
   		<artifactId>spring-orm</artifactId>
   		<version>3.2.0.RELEASE</version>
   	</dependency>
+
+
+persistence.xml ->configuration file
+
+Defines datasource, allowed operations, caching, etc 
+spring overrides settings
+still needed src/main/resources/META-INF/persistence.xml (empty)
