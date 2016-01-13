@@ -121,9 +121,15 @@ Result ca la celelalte versiuni de spring :)
 a.setter injection
 b.constructor injection
 
-Engine engine;
+@Component
+public class A{
+}
 
-@Inject //@Reference
-public void setEngine(Engine engine){
-this.engine=engine;
+@Component
+public classb{
+@Autowired
+class A a;
+
+public setA(A a){
+}
 }
