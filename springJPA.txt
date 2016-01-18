@@ -53,3 +53,23 @@ still needed src/main/resources/META-INF/persistence.xml (empty)
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
+
+
+
+
+Fetch types:
+-lazy - queries teh database when property is called (eq. repo.method())
+-eager - queries the database when the object is originally created
+
+
+
+
+
+
+
+
+
+
+
+
+
